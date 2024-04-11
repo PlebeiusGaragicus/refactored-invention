@@ -1,0 +1,19 @@
+python-dotenv
+# redis
+
+streamlit
+streamlit-authenticator
+# streamlit_mic_recorder
+
+langchain
+langchain_core
+langgraph
+langchain_openai
+langchain_community
+
+# gtts
+# ollama
+# openai
+# google-generativeai
+# assemblyai
+# mistralai
