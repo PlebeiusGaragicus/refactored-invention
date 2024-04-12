@@ -7,9 +7,9 @@ streamlit-authenticator
 
 langchain
 langchain_core
-langgraph
 langchain_openai
 langchain_community
+langgraph
 
 # gtts
 # ollama
