@@ -5,4 +5,4 @@ source venv/bin/activate
 export DEBUG=true
 
 args="--server.runOnSave true --logger.level info --server.headless true"
-streamlit run $args TESTING/test.py
+streamlit run $args ./test.py
