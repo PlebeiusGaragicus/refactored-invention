@@ -23,7 +23,7 @@ class OllamaSimpleChain():
     avatar: str = "🦙"
 
     def show_prompts(self):
-        st.text_area("System Prompt", key="system_prompt", height=150, value=SYSTEM_PROMPT)
+        st.text_area("SYSTEM", key="system_prompt", height=150, value=SYSTEM_PROMPT)
         st.text_area("Reflector Prompt", key="reflector_prompt", height=150, value=REFLECTOR_PROMPT)
 
     def show_settings(self):
@@ -60,7 +60,7 @@ class OllamaSimpleChain():
             history_messages_key="history",
         )
 
-        cprint("CONSTRUCT RUNNABLE:", Colors.YELLOW)
+        cprint("\n\nCONSTRUCT RUNNABLE:", Colors.YELLOW)
         cprint(str(construct), Colors.GREEN)
 
         return construct.invoke({"user_prompt": st.session_state.prompt}, config)
