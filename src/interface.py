@@ -8,7 +8,6 @@ def V_SPACE(lines):
         st.write('&nbsp;')
 
 
-
 def center_text(type, text, size=None):
     if size == None:
         st.write(f"<{type} style='text-align: center;'>{text}</{type}>", unsafe_allow_html=True)

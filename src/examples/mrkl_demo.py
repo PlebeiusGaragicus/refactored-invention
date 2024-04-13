@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 import sqlite3
 
 from capturing_callback_handler import playback_callbacks
-from clear_results import with_clear_container
+from src.examples.clear_results import with_clear_container
 
 DB_PATH = (Path(__file__).parent / "Chinook.db").absolute()
 

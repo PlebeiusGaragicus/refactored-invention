@@ -24,7 +24,7 @@ class OllamaSimpleChain():
 
     def show_prompts(self):
         st.text_area("SYSTEM", key="system_prompt", height=150, value=SYSTEM_PROMPT)
-        st.text_area("Reflector Prompt", key="reflector_prompt", height=150, value=REFLECTOR_PROMPT)
+        # st.text_area("Reflector Prompt", key="reflector_prompt", height=150, value=REFLECTOR_PROMPT)
 
     def show_settings(self):
         st.selectbox("Model", ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"], key="selected_model")

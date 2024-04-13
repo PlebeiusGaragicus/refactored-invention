@@ -1,3 +1,5 @@
+import inspect
+
 from langchain.callbacks.base import BaseCallbackHandler
 
 # from langchain_community.chat_message_histories import StreamlitChatMessageHistory
@@ -37,7 +39,15 @@ def run_prompt(user_prompt_placeholder, bot_reply_placeholder):
     ret = st.session_state.construct.run_prompt(bot_reply_placeholder)
 
     with bot_reply_placeholder:
-        st.chat_message("ai", avatar="🤖").write(ret.content)
+        # st.chat_message("ai", avatar="🤖").write(ret.content)
+        with st.chat_message("ai", avatar="🤖"):
+            # if it's a generator
+            # if type(ret.content) is not itertools.iterable:
+            if inspect.isgenerator(ret):
+                for msg in ret:
+                    st.write(msg.content)
+            else:
+                st.write(ret.content)
 
 
 
