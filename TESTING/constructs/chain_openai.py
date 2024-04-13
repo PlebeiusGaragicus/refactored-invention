@@ -36,6 +36,9 @@ class OpenAIChain():
     name: str = "OpenAI"
     avatar: str = "💫"
 
+    def show_prompts(self):
+        st.text_area("System Prompt", key="system_prompt", height=200)
+
     def show_settings(self):
         st.selectbox("Model", OPENAI_MODELS, key="selected_model")
         st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
