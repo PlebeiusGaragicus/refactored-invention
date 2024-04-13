@@ -10,8 +10,8 @@ from langchain_core.messages import HumanMessage, AIMessage
 
 import streamlit as st
 
-from TESTING.constructs import ALL_CONSTRUCTS
-from TESTING.interface import center_text
+from src.constructs import ALL_CONSTRUCTS
+from src.interface import center_text
 
 
 def cmp_constructs():

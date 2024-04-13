@@ -4,7 +4,7 @@ import pathlib
 
 import streamlit as st
 
-from TESTING.common import FILES_DIR
+from src.common import FILES_DIR
 
 
 

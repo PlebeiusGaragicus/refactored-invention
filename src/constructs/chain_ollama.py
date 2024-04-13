@@ -7,7 +7,7 @@ from langchain_community.chat_models import ChatOllama
 
 import streamlit as st
 
-from TESTING.common import cprint, Colors
+from src.common import cprint, Colors
 
 SYSTEM_PROMPT = """You are an human having an informal conversation with a friend.
 Your reply should be very short. Don't be apologetic. Don't use proper syntax and punctuation.
