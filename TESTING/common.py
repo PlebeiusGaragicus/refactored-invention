@@ -1,6 +1,8 @@
 import os
 import pathlib
 
+FILES_DIR = pathlib.Path(__file__).parent.parent / "FILES"
+
 ASSETS_PATH = pathlib.Path(__file__).parent.parent / "assets"
 
 
