@@ -8,6 +8,7 @@ from langchain_community.chat_models import ChatOllama
 import streamlit as st
 
 from src.common import cprint, Colors
+from src.components.presets import find_preset
 
 SYSTEM_PROMPT = """You are an human having an informal conversation with a friend.
 Your reply should be very short. Don't be apologetic. Don't use proper syntax and punctuation.
@@ -22,14 +23,21 @@ class OllamaSimpleChain():
     name: str = "Ollama"
     avatar: str = "🦙"
 
+    def show_settings(self):
+        st.slider(label="Temperature",
+                  min_value=0.0, max_value=1.0, step=0.01,
+                  value=find_preset("temperature", default=0.5),
+                  key="*temperature")
+
+        options = ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"]
+        st.selectbox("Model", options=options, key="selected_model", index=find_preset("model", is_index=True, options_list=options))
+        # st.checkbox("Safe Mode", value=True, key="safe_mode")
+
+
     def show_prompts(self):
         st.text_area("SYSTEM", key="system_prompt", height=150, value=SYSTEM_PROMPT)
         # st.text_area("Reflector Prompt", key="reflector_prompt", height=150, value=REFLECTOR_PROMPT)
 
-    def show_settings(self):
-        st.selectbox("Model", ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"], key="selected_model")
-        st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
-        # st.checkbox("Safe Mode", value=True, key="safe_mode")
 
 
     def run_prompt(self, bot_reply_placeholder):
@@ -44,7 +52,8 @@ class OllamaSimpleChain():
         config = {"configurable": {"session_id": str(st.session_state.session_id)}}
 
         # stream_handler = StreamHandler(bot_reply_placeholder)
-        stream_handler = StreamlitCallbackHandler(bot_reply_placeholder, collapse_completed_thoughts=True)
+        thought_labeler = BaseCallbackHandler()
+        stream_handler = StreamlitCallbackHandler(bot_reply_placeholder, collapse_completed_thoughts=True, thought_labeler=thought_labeler)
         llm = ChatOllama(
                 model=st.session_state.selected_model,
                 streaming=True,

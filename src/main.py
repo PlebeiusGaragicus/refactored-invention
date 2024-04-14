@@ -71,3 +71,14 @@ def main():
 
         ### DEBUG
         cmp_debug()
+
+    with st.sidebar:
+        for s in st.session_state:
+            if s.startswith("*"):
+                st.write(s)
+                st.write(st.session_state[s])
+
+        from src.components.presets import get_db
+        db = get_db()
+        current_preset = db.presets.find({"construct": st.session_state.selected_construct, "name": st.session_state.saved_hyperparameters})
+        st.write(list(current_preset))

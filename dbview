@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source venv/bin/activate
+
+export DEBUG=true
+
+args="--server.runOnSave true --logger.level info"
+streamlit run $args dbVIEW.py

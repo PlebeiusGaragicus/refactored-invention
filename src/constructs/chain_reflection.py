@@ -43,7 +43,8 @@ class ChainReflectionBot():
     def show_settings(self):
         # st.selectbox("Model", ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"], key="selected_model")
         # st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
-        st.number_input("Max Iterations", min_value=1, max_value=10, value=3, step=1, key="max_iterations")
+        # st.number_input("Max Iterations", min_value=1, max_value=10, value=3, step=1, key="max_iterations")
+        st.select_slider("Max Iterations", options=[i + 1 for i in range(10)], value=3, key="max_iterations")
 
 
 
@@ -116,8 +117,8 @@ def compile_runnable(stream_handler):
     builder.set_entry_point("generate")
 
 
-    def should_continue(state: List[BaseMessage]):
-        if len(state) / 2 > st.session_state.max_iterations: # TODO... hmmm
+    def should_continue(state: List[BaseMessage], max_iterations: int = 3):
+        if len(state) / 2 > max_iterations: # TODO... hmmm
             return END
         return "reflect"
 

@@ -35,6 +35,11 @@ def cmp_constructs():
 
     st.toast(f"Switched to {selected}!", icon=st.session_state["construct"].avatar)
 
+    for s in st.session_state:
+        if s.startswith("*"):
+            del st.session_state[s]
+            print(f"Deleted {s}")
+
     new_chat()
     # st.rerun()
 
