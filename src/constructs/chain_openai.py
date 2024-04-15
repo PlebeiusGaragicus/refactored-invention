@@ -8,6 +8,9 @@ from langchain_openai import ChatOpenAI
 
 import streamlit as st
 
+from src.components.presets import find_preset
+
+
 
 # OPENAI_MODELS = ["gpt-3.5-turbo-1106"]
 # https://platform.openai.com/docs/models/gpt-3-5-turbo
@@ -32,22 +35,37 @@ OPENAI_MODELS = [
         # "gpt-3.5-turbo-16k-0613",
     ]
 
+DEFAULT_SYSTEM_PROMPT = """You are an human having an informal conversation with a friend. Your reply should be very short."""
+
 class OpenAIChain():
     name: str = "OpenAI"
     avatar: str = "💫"
 
     def show_prompts(self):
-        st.text_area("System Prompt", key="system_prompt", height=200)
+        st.text_area("System Prompt",
+                height=200,
+                value=find_preset("system_prompt", default=DEFAULT_SYSTEM_PROMPT),
+                key="preset_system_prompt")
+
 
     def show_settings(self):
-        st.selectbox("Model", OPENAI_MODELS, key="selected_model")
-        st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
+        # options = ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"]
+        # st.selectbox(label="Model", options=options,
+        #         index=find_preset("selected_model", is_index=True, options_list=options, default=0),
+        #         key="preset_selected_model",)
+        st.selectbox("Model", OPENAI_MODELS,
+                index=find_preset("selected_model", is_index=True, options_list=OPENAI_MODELS, default=0),
+                key="preset_selected_model")
+        st.slider(label="Temperature",
+                min_value=0.0, max_value=1.0, step=0.01,
+                value=find_preset("temperature", default=0.5),
+                key="preset_temperature")
 
 
     def run_prompt(self, bot_reply_placeholder):
         llm_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "You are an human having an informal conversation with a friend. Your reply should be very short."),
+                ("system", st.session_state.preset_system_prompt),
                 MessagesPlaceholder(variable_name="history"),
                 ("human", "{user_prompt}"),
             ]
@@ -62,8 +80,8 @@ class OpenAIChain():
             raise ValueError("OPENAI_API_KEY environment variable must be set")
 
         llm = ChatOpenAI(
-                model=st.session_state.selected_model,
-                temperature=st.session_state.temperature,
+                model=st.session_state.preset_selected_model,
+                temperature=st.session_state.preset_temperature,
                 api_key=api_key,
                 streaming=True,
                 callbacks=[stream_handler]
@@ -78,6 +96,7 @@ class OpenAIChain():
             history_messages_key="history",
         )
 
-        st.sidebar.write(construct)
+        print(construct)
+        # st.sidebar.write(construct)
 
         return construct.invoke({"user_prompt": st.session_state.prompt}, config)

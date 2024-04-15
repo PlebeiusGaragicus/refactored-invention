@@ -33,4 +33,4 @@ def main():
 
             if st.button(f"Delete", key=preset["_id"]):
                 db.presets.delete_one({"_id": preset["_id"]})
-
+                st.rerun()

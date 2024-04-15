@@ -24,26 +24,29 @@ class OllamaSimpleChain():
     avatar: str = "🦙"
 
     def show_settings(self):
-        st.slider(label="Temperature",
-                  min_value=0.0, max_value=1.0, step=0.01,
-                  value=find_preset("temperature", default=0.5),
-                  key="*temperature")
-
         options = ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"]
-        st.selectbox("Model", options=options, key="selected_model", index=find_preset("model", is_index=True, options_list=options))
-        # st.checkbox("Safe Mode", value=True, key="safe_mode")
+        st.selectbox(label="Model", options=options,
+                index=find_preset("selected_model", is_index=True, options_list=options, default=0),
+                key="preset_selected_model",)
+
+        st.slider(label="Temperature",
+                min_value=0.0, max_value=1.0, step=0.01,
+                value=find_preset("temperature", default=0.5),
+                key="preset_temperature")
 
 
     def show_prompts(self):
-        st.text_area("SYSTEM", key="system_prompt", height=150, value=SYSTEM_PROMPT)
-        # st.text_area("Reflector Prompt", key="reflector_prompt", height=150, value=REFLECTOR_PROMPT)
+        st.text_area(label="SYSTEM PROMPT", height=150,
+                    value=find_preset("system_prompt", default=SYSTEM_PROMPT),
+                    key="preset_system_prompt")
 
 
 
     def run_prompt(self, bot_reply_placeholder):
+        print(st.session_state.preset_system_prompt)
         llm_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", st.session_state.system_prompt),
+                ("system", st.session_state.preset_system_prompt),
                 MessagesPlaceholder(variable_name="history"),
                 ("human", "{user_prompt}"),
             ]
@@ -53,11 +56,15 @@ class OllamaSimpleChain():
 
         # stream_handler = StreamHandler(bot_reply_placeholder)
         thought_labeler = BaseCallbackHandler()
-        stream_handler = StreamlitCallbackHandler(bot_reply_placeholder, collapse_completed_thoughts=True, thought_labeler=thought_labeler)
+        stream_handler = StreamlitCallbackHandler(
+                            bot_reply_placeholder,
+                            collapse_completed_thoughts=True)#,
+                            # thought_labeler=thought_labeler)
+
         llm = ChatOllama(
-                model=st.session_state.selected_model,
+                model=st.session_state.preset_selected_model,
                 streaming=True,
-                temperature=str(st.session_state.temperature),
+                temperature=str(st.session_state.preset_temperature),
                 callbacks=[stream_handler]
             )
         chain = llm_prompt | llm

@@ -9,7 +9,7 @@ def find_preset(key, default = None, is_index: bool = False, options_list: list 
 
     current_preset = db.presets.find({"construct": st.session_state.selected_construct, "name": st.session_state.saved_hyperparameters})
 
-    print("BUG")
+    # print("BUG")
     # print(current_preset)
     preset = list(current_preset)
 
@@ -18,9 +18,9 @@ def find_preset(key, default = None, is_index: bool = False, options_list: list 
         return default
 
     preset = preset[0]
-    print(preset)
+    # print(preset)
 
-    true_key = f"*{key}"
+    true_key = f"preset_{key}"
     # if true_key in st.session_state:
     if true_key in preset:
         if is_index:
@@ -59,7 +59,7 @@ def save_hyperparameters(name):
         }
     
     for s in st.session_state:
-        if s.startswith("*"):
+        if s.startswith("preset_"):
             to_save[s] = st.session_state[s]
 
     if db.presets.find_one({"name": name, "construct": st.session_state.selected_construct}):
@@ -119,7 +119,7 @@ def cmp_presets():
         if default_preset:
             default_preset = default_preset[0]
             index_of_default = options.index(default_preset)
-            # options[index_of_default] = f"⭐ {default_preset}"
+            # options[index_of_default] = f"⭐ {default_preset}" # this makes it so the preset isn't found and isn't loaded... a shame, really
         st.selectbox(label="saved_hyperparameters", options=options, key="saved_hyperparameters", label_visibility="collapsed", index=index_of_default)
 
         # db = get_db()
@@ -130,14 +130,14 @@ def cmp_presets():
         with cl2[0]:
             with st.popover(":green[Save as new preset]", use_container_width=True):
                 with st.form(key="preset_form", clear_on_submit=True):
-                    st.text_input("preset name", key="preset_name")
+                    st.text_input("preset name", key="new_preset_name")
                     if st.form_submit_button("Save"):
-                        save_hyperparameters(st.session_state.preset_name)
+                        save_hyperparameters(st.session_state.new_preset_name)
                         st.rerun()
 
         with cl2[1]:
             # if st.button(":blue[💾 Save]", use_container_width=True, disabled=st.session_state.current_preset == []):
-            if st.button(":blue[💾 Save]", use_container_width=True, disabled=False):
+            if st.button(":blue[💾 Save]", use_container_width=True, disabled=st.session_state.saved_hyperparameters is None):
                 # delete_preset()
                 save_hyperparameters(st.session_state.saved_hyperparameters)
                 st.rerun()

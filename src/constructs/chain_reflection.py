@@ -6,7 +6,9 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
+
 
 from typing import List, Sequence
 
@@ -15,6 +17,10 @@ from langgraph.graph import END, MessageGraph
 from pydantic import BaseModel
 
 import streamlit as st
+
+from src.components.presets import find_preset
+
+
 
 DEFAULT_GOAL = """You are an essay assistant tasked with writing excellent 5-paragraph essays.
 Generate the best essay possible for the user's request.
@@ -32,11 +38,16 @@ class ChainReflectionBot():
     name: str = "Reflection"
     avatar: str = "🤔"
 
-
     def show_prompts(self):
-        # st.text_area("SYSTEM", key="system_prompt", height=150, value=SYSTEM_PROMPT)
-        st.text_area("Goal Prompt", key="goal_prompt", height=150, value=DEFAULT_GOAL)
-        st.text_area("Reflection Prompt", key="reflection_prompt", height=150, value=DEFAULT_REFLECTION)
+        st.text_area("Goal Prompt", height=150,
+                value=find_preset("goal_prompt", default=DEFAULT_GOAL),
+                key="preset_goal_prompt")
+
+        st.text_area("Reflection Prompt", height=150,
+                value=find_preset("reflection_prompt", default=DEFAULT_REFLECTION),
+                key="preset_reflection_prompt")
+
+
         st.write("Generate a short essay on the topicality of The Little Prince and its message in modern life. Keep it no more than 200 words.")
 
 
@@ -44,7 +55,9 @@ class ChainReflectionBot():
         # st.selectbox("Model", ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"], key="selected_model")
         # st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
         # st.number_input("Max Iterations", min_value=1, max_value=10, value=3, step=1, key="max_iterations")
-        st.select_slider("Max Iterations", options=[i + 1 for i in range(10)], value=3, key="max_iterations")
+        st.select_slider("Max Iterations", options=[i + 1 for i in range(10)],
+                value=find_preset("max_iterations", default=3),
+                key="preset_max_iterations")
 
 
 
@@ -53,7 +66,7 @@ class ChainReflectionBot():
 
     def run_prompt(self, bot_reply_placeholder):
         stream_handler = StreamlitCallbackHandler(bot_reply_placeholder, collapse_completed_thoughts=True)
-        graph = compile_runnable(stream_handler)
+        graph = compile_runnable(stream_handler, max_iterations = st.session_state.preset_max_iterations)
 
         # return graph.stream([HumanMessage(content=st.session_state.prompt)],)
 
@@ -65,19 +78,25 @@ class ChainReflectionBot():
 
 
 
-def compile_runnable(stream_handler):
+def compile_runnable(stream_handler, max_iterations):
 
     prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                st.session_state.goal_prompt,
+                st.session_state.preset_goal_prompt,
             ),
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
 
-    llm = ChatOpenAI(streaming=True, callbacks=[stream_handler])
+    # llm = ChatOpenAI(streaming=True, callbacks=[stream_handler])
+    llm = ChatOllama(
+                model="llama2:7b",
+                streaming=True,
+                temperature=str(0.5),
+                callbacks=[stream_handler]
+            )
     generate = prompt | llm
 
 
@@ -86,7 +105,7 @@ def compile_runnable(stream_handler):
     [
         (
             "system",
-            st.session_state.reflection_prompt, # This is a 2-tuple of (role, content) with role being 'human', 'user', 'ai', 'assistant', or 'system'.
+            st.session_state.preset_reflection_prompt, # This is a 2-tuple of (role, content) with role being 'human', 'user', 'ai', 'assistant', or 'system'.
         ),
         MessagesPlaceholder(variable_name="messages"),
     ])
@@ -117,7 +136,8 @@ def compile_runnable(stream_handler):
     builder.set_entry_point("generate")
 
 
-    def should_continue(state: List[BaseMessage], max_iterations: int = 3):
+    def should_continue(state: List[BaseMessage]):
+        # if len(state) / 2 > max_iterations: # TODO... hmmm
         if len(state) / 2 > max_iterations: # TODO... hmmm
             return END
         return "reflect"
