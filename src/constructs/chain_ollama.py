@@ -27,7 +27,7 @@ class OllamaSimpleChain():
         options = ["dolphin-mistral:latest", "mistral:7b", "llama2:7b", "gemma:2b"]
         st.selectbox(label="Model", options=options,
                 index=find_preset("selected_model", is_index=True, options_list=options, default=0),
-                key="preset_selected_model",)
+                key="preset_selected_model")
 
         st.slider(label="Temperature",
                 min_value=0.0, max_value=1.0, step=0.01,

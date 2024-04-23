@@ -12,9 +12,11 @@ from langchain.callbacks.base import BaseCallbackHandler
 
 from langchain_core.messages import HumanMessage
 
+
 import streamlit as st
 
 
+from src.common import BOT_AVATAR, HUMAN_AVATAR
 
 
 class StreamHandler(BaseCallbackHandler):
@@ -24,7 +26,8 @@ class StreamHandler(BaseCallbackHandler):
 
     def on_llm_new_token(self, token: str, **kwargs) -> None:
         self.text += token
-        with self.container.chat_message("ai", avatar="🤖"):
+        # with self.container.chat_message("ai", avatar="🤖"):
+        with self.container.chat_message("ai", avatar=BOT_AVATAR):
             st.markdown(self.text)
 
 
@@ -34,14 +37,14 @@ class StreamHandler(BaseCallbackHandler):
 
 
 
-def run_prompt(user_prompt_placeholder, bot_reply_placeholder):
-    user_prompt_placeholder.chat_message("human", avatar="🗣️").write(st.session_state.prompt)
+def run_prompt(user_prompt_placeholder, bot_reply_placeholder, thoughts):
+    user_prompt_placeholder.chat_message("human", avatar=HUMAN_AVATAR).write(st.session_state.prompt)
 
-    ret = st.session_state.construct.run_prompt(bot_reply_placeholder)
+    ret = st.session_state.construct.run_prompt(bot_reply_placeholder, thoughts)
 
     with bot_reply_placeholder:
         # st.chat_message("ai", avatar="🤖").write(ret.content)
-        with st.chat_message("ai", avatar="🤖"):
+        with st.chat_message("ai", avatar=BOT_AVATAR):
             # if it's a generator
             # if type(ret.content) is not itertools.iterable:
             if inspect.isasyncgen(ret):
@@ -54,20 +57,30 @@ def run_prompt(user_prompt_placeholder, bot_reply_placeholder):
                 st.write(ret.content)
 
 
+def cmp_convo_thoughts():
+    st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
+
+    thought_container = st.empty()
+    thought_container.container(height=500, border=True)
+    # with st.container(height=500, border=True):
+        # pass
+
+    return thought_container
 
 
 
 
-def cmp_convo_history():
-    st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow")
+
+def cmp_convo_history(thoughts):
+    st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
 
     with st.container(height=500, border=True):
         for msg in st.session_state.langchain_messages:
-            st.chat_message(msg.type, avatar="🗣️" if type(msg) is HumanMessage else "🤖").write(msg.content)
+            st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
         user_prompt_placeholder = st.empty()
         bot_reply_placeholder = st.empty()
 
-    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_prompt, args=(user_prompt_placeholder, bot_reply_placeholder,))
+    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_prompt, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
 
 
 

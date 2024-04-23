@@ -64,7 +64,6 @@ def save_hyperparameters(name):
 
     if db.presets.find_one({"name": name, "construct": st.session_state.selected_construct}):
         db.presets.update_one({"name": name, "construct": st.session_state.selected_construct}, {"$set": to_save})
-        print("REPLACING PRESET")
     else:
         db.presets.insert_one(to_save)
 
@@ -105,8 +104,8 @@ def delete_preset():
 
 
 def cmp_presets():
-    st.sidebar.markdown("# :violet[Saved Graph Configurations]")
-    with st.sidebar.container(border=True):
+    st.header(":violet[Saved Configurations]", divider="rainbow", anchor="presets")
+    with st.container(border=True):
 
         presets = load_presets()
         if presets:

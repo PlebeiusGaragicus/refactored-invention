@@ -9,7 +9,7 @@ from src.common import FILES_DIR
 
 
 def cmp_vector_database():
-    st.header("🗄️ :green[Vector database]", divider="rainbow")
+    st.header("🗄️ :green[Vector database]", divider="rainbow", anchor="VectorDatabase")
 
     cols2 = st.columns((1, 2, 1))
     with cols2[0]:

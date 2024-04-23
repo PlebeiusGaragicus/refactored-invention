@@ -1,7 +1,7 @@
 import streamlit as st
 
 def cmp_hyperparameters():
-    st.header(":orange[𝚯] :grey[Hyperparameters]", divider="rainbow")
+    st.header(":orange[𝚯] :grey[Hyperparameters]", divider="rainbow", anchor="Hyperparameters")
     # st.header(":orange[𝚯] Graph hyperparameters", divider="rainbow")
     # with st.container(height=1000, border=True):
 

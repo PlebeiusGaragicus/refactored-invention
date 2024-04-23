@@ -21,7 +21,6 @@ def cmp_constructs():
         st.session_state.selected_construct = None
         st.toast("Welcome to PlebChat!", icon="🎉")
 
-    # selected = st.radio("Construct", ["Ollama", "OpenAI"], key="chosen_construct", horizontal=True, index=0, label_visibility="collapsed")
     selected = st.radio("Construct", construct_names, horizontal=True, index=0, label_visibility="collapsed")
 
     if selected == st.session_state.selected_construct:
@@ -71,10 +70,30 @@ def draw_clear_button(container):
             st.button("💾 :blue[Save]", on_click=lambda: st.session_state.langchain_messages.clear(), use_container_width=True, disabled=not len(st.session_state.langchain_messages))
 
 
+def cmp_links():
+    st.header("", divider="rainbow")
+    # st.markdown("# :blue[Links]")
+    # st.write(":orange[𝚯] [Hyperparameters](#Hyperparameters)")
+    # st.write("🔧 [Tools](#Tools)")
+    # st.write("🗄️ [Vector Database](#VectorDatabase)")
+    # st.write("🗣️💬 [Conversation history](#ConvoHistory)")
+    st.markdown("""# :blue[Links]
+:orange[𝚯] [Hyperparameters](#Hyperparameters)
+
+🗄️ [Vector Database](#VectorDatabase)
+
+🔧 [Tools](#Tools)
+
+🗣️💬 [Conversation history](#ConvoHistory)
+
+""")
+    # st.write("")
+    # st.write("🗣️💬 [Conversation history](#ConvoHistory)")
+    
+
 
 def cmp_saved_conversations():
-    st.header("", divider="rainbow")
-    st.markdown("# :blue[Saved Conversations]")
+    st.header(":blue[Saved Conversations]", divider="rainbow")
     # st.markdown(".")
     if len(st.session_state.langchain_messages) > 0:
         clear_button_placeholder = st.empty()
@@ -98,8 +117,7 @@ def draw_messages():
 
 
 def cmp_debug():
-    st.header("", divider="rainbow")
-    st.markdown("#")
+    st.header("🪲 :red[Debug]", divider="rainbow")
     draw_messages()
     if len(st.session_state.langchain_messages) > 0:
         with st.popover("Graph state"): # Message json

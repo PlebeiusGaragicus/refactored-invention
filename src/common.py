@@ -5,6 +5,8 @@ FILES_DIR = pathlib.Path(__file__).parent.parent / "FILES"
 
 ASSETS_PATH = pathlib.Path(__file__).parent.parent / "assets"
 
+BOT_AVATAR = str(ASSETS_PATH/"bot.png")
+HUMAN_AVATAR = str(ASSETS_PATH/"user.png")
 
 class Colors():
     BLACK = 0

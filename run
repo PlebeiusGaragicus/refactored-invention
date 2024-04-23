@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source venv/bin/activate
+
+args="--server.runOnSave true --logger.level info --server.headless true"
+streamlit run $args app.py
