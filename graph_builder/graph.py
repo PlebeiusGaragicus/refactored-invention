@@ -188,13 +188,14 @@ def friendly_chatbot(state: State, config: RunnableConfig):
 
             # Keep replies short, don't use proper grammar or punctuation.\n
     prompt = PromptTemplate(
-            template="""You are an human having an informal conversation with a friend.
-Your reply should be very short. Don't use proper syntax and punctuation.
-Don't be apologetic. Use emoji sparingly.
-If I don't say much, don't try to fill in the conversation.
----
-Conversation History:
-{messages}""",
+#             template="""You are an human having an informal conversation with a friend.
+# Your reply should be very short. Don't use proper syntax and punctuation.
+# Don't be apologetic. Use emoji sparingly.
+# If I don't say much, don't try to fill in the conversation.
+            template="""You are an assistant.  Apologize to the user - their query didn't work.
+Your reply should be very short.""",
+
+# {messages}""",
             input_variables=["messages"],
         )
             # Conversation history: {messages}\n
@@ -252,7 +253,8 @@ def build_graph(use_open_routing: bool):
 def graph_parameter_widgets():
     from .interface import create_slider, create_selectbox, create_checkbox, create_text_area
 
-    MODEL_OPTIONS = ['llama3:latest', 'mistral:7b', 'dolphin-mistral:latest', 'gemma:2b', 'OpenAI']
+    # MODEL_OPTIONS = ['llama3:latest', 'mistral:7b', 'dolphin-mistral:latest', 'gemma:2b', 'OpenAI']
+    MODEL_OPTIONS = ['gemma:2b', 'mistral:7b', 'dolphin-mistral:latest', 'OpenAI']
 
 
     return {
