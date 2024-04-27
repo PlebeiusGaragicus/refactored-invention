@@ -4,12 +4,17 @@ python-dotenv
 streamlit
 streamlit-authenticator
 # streamlit_mic_recorder
+stqdm
 
 langchain
 langchain_core
 langchain_openai
 langchain_community
 langgraph
+
+tavily-python
+bs4
+chromadb
 
 # gtts
 # ollama
