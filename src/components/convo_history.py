@@ -19,16 +19,16 @@ import streamlit as st
 from src.common import BOT_AVATAR, HUMAN_AVATAR
 
 
-class StreamHandler(BaseCallbackHandler):
-    def __init__(self, container, initial_text=""):
-        self.container = container
-        self.text = initial_text
+# class StreamHandler(BaseCallbackHandler):
+#     def __init__(self, container, initial_text=""):
+#         self.container = container
+#         self.text = initial_text
 
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        self.text += token
-        # with self.container.chat_message("ai", avatar="🤖"):
-        with self.container.chat_message("ai", avatar=BOT_AVATAR):
-            st.markdown(self.text)
+#     def on_llm_new_token(self, token: str, **kwargs) -> None:
+#         self.text += token
+#         # with self.container.chat_message("ai", avatar="🤖"):
+#         with self.container.chat_message("ai", avatar=BOT_AVATAR):
+#             st.markdown(self.text)
 
 
 
@@ -70,6 +70,9 @@ def cmp_convo_thoughts():
 
 
 
+def run_graph():
+    pass
+
 
 def cmp_convo_history(thoughts):
     st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
@@ -80,7 +83,7 @@ def cmp_convo_history(thoughts):
         user_prompt_placeholder = st.empty()
         bot_reply_placeholder = st.empty()
 
-    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_prompt, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
+    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
 
 
 

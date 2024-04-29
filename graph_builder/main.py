@@ -17,8 +17,10 @@ from langchain_core.runnables import RunnableConfig
 from .interface import Colors, color, reset_color, cprint, cput, change_color, build_interface
 from .graph import build_graph, graph_parameter_widgets
 
+import logging
 
 def main():
+    logging.debug("hello ser...")
     st.set_page_config(page_title="Langchain Graph Builder", page_icon="🦜", layout="wide")
 
     if 'session_id' not in st.session_state:
@@ -41,7 +43,7 @@ def main():
         # rc = right.popover("Thought Process")
         rc = right.container(border=True, height=600)
         status = rc.empty()
-        status = status.status("Running the graph", expanded=False, state="running")
+        # status = status.status("Running the graph", expanded=False, state="running")
         # status = MutableExpander("Running the graph", expanded=False, state="running")
         # rc.markdown("---")
 
@@ -57,40 +59,46 @@ def main():
             with lc.chat_message(name=message.type):
                 st.write(message.content)
 
-    if input := st.chat_input(placeholder="Question:", key="input"):
-        # st.session_state.convo_history.append(HumanMessage(content=input))
+    # with lc:
+        if input := st.chat_input(placeholder="Question:", key="input"):
+            # st.session_state.convo_history.append(HumanMessage(content=input))
 
-        # status.status("Running the graph", expanded=False, state="running")
-
-        lc.chat_message(name="human").write(input)
-        bot_reply_chatmessage = lc.chat_message("assistant")
-
-        with lc:
-            cols = st.columns((1, 1, 1))
-            with cols[-1]:
-                interrupt_button = st.empty()
-            # if interrupt_button.button("Interrupt", key="interrupt", on_click=lambda: st.rerun):
-            if interrupt_button.button(":red[Interrupt]", key="interrupt", use_container_width=True):
-                # remove last item in convo_history
-                # del st.session_state.convo_history[-1]
-                # st.session_state.convo_history = st.session_state.convo_history[:-1]
-                # st.write(st.session_state.convo_history)
-                # print(st.session_state.convo_history)
-                st.rerun()
-
-            with cols[0]:
-                with st.spinner("Thinking..."):
-                    # status = st.empty()
-                    # status.warning("Running the graph...")
-                    asyncio.run(run_graph(rc, bot_reply_chatmessage))
-                    # status.empty()
-                    # status.success("Done!")
-                    status.update(state="complete")
-                    # rc.success("Done!")
-                    interrupt_button.empty()
+            # with status.container():
+            status_expander = status.status(":orange[Running:]", expanded=False, state="running")
+            # with status.container():
+            # status_expander.write('hi')
 
 
+            with lc:
+                st.chat_message(name="human").write(input)
+                bot_reply_chatmessage = st.chat_message("assistant")
 
+            # with lc:
+                cols = st.columns((1, 1, 1))
+                with cols[-1]:
+                    interrupt_button = st.empty()
+                # if interrupt_button.button("Interrupt", key="interrupt", on_click=lambda: st.rerun):
+                if interrupt_button.button(":red[Interrupt]", key="interrupt", use_container_width=True):
+                    # remove last item in convo_history
+                    # del st.session_state.convo_history[-1]
+                    # st.session_state.convo_history = st.session_state.convo_history[:-1]
+                    # st.write(st.session_state.convo_history)
+                    # print(st.session_state.convo_history)
+                    st.rerun()
+
+                with cols[0]:
+                    with st.spinner("Thinking..."):
+                        # status = st.empty()
+                        # status.warning("Running the graph...")
+                        asyncio.run(run_graph(rc, bot_reply_chatmessage, status_expander))
+                        # status.empty()
+                        # status.success("Done!")
+                        status_expander.update(label=":green[Graph run complete]", state="complete")
+                        # rc.success("Done!")
+                        interrupt_button.empty()
+
+
+    st.sidebar.markdown("# Session state:")
     st.sidebar.write(st.session_state)
 ########################################################################################################
 
@@ -111,7 +119,7 @@ def main():
 
 
 
-async def run_graph(thought_container, bot_reply_chatmessage):
+async def run_graph(thought_container, bot_reply_chatmessage, status_expander):
 
     # st.info("Running the graph...")
 
@@ -126,11 +134,11 @@ async def run_graph(thought_container, bot_reply_chatmessage):
     # graph_config['callbacks'] = [callback()]
     graph_config['hyperparameters'] = st.session_state.graph_hyperparameters
     graph_config['metadata'] = {"conversation_id": st.session_state.session_id}
-    st.sidebar.write("Graph config:")
+    st.sidebar.markdown("# Graph config:")
     st.sidebar.json(graph_config)
 
     graph_input = {"input": st.session_state.input, "messages": st.session_state.convo_history}
-    st.sidebar.write("Graph input:")
+    st.sidebar.markdown("# Graph input:")
     st.sidebar.json(graph_input)
 
     # NOTE: we give parameters to the graph builder as it will be used to differentiate builds of the graph!!
@@ -157,11 +165,13 @@ async def run_graph(thought_container, bot_reply_chatmessage):
         print(event)
         print('\n\n')
         # thought_text.json(event)
+        status_expander.write(event['event'])
+        status_expander.update(label=f":orange[Running:] :red[{event['event']}]")
 
         if event['event'] == "on_chain_end":
             if event['name'] == "LangGraph":
                 last_node = event['data']['output'].keys()
-                print(last_node)
+                # print(last_node)
                 # get the first key
                 last_key = list(last_node)[0]
                 last_message = event['data']['output'].get(last_key)['messages'][0].content

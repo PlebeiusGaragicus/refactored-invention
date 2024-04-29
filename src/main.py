@@ -58,8 +58,9 @@ def main():
     ### BOTTOM ###
     bcol2 = st.columns((2, 1))
     # bcol2 = st.columns((1, 1))
+    with st.sidebar:
+        cmp_metrics()
     with bcol2[1]:
-        # cmp_metrics()
         thoughts = cmp_convo_thoughts()
 
 

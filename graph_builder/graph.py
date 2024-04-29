@@ -187,6 +187,7 @@ def friendly_chatbot(state: State, config: RunnableConfig):
 
     # format the message history for the prompt
     messages = '\n'.join(f"{message.type}: {message.content}" for message in state["messages"])
+    input = state["input"]
 
 
             # Keep replies short, don't use proper grammar or punctuation.\n
@@ -196,16 +197,18 @@ def friendly_chatbot(state: State, config: RunnableConfig):
 # Don't be apologetic. Use emoji sparingly.
 # If I don't say much, don't try to fill in the conversation.
             template="""You are an assistant.  Apologize to the user - their query didn't work.
-Your reply should be very short.""",
+Your reply should be very short.
 
-# {messages}""",
+User query:
+{input}
+""",
             input_variables=["messages"],
         )
             # Conversation history: {messages}\n
             # Your friend said: {user_input}""",
             # input_variables=["user_input", "messages"],
         
-    cprint(prompt.pretty_repr().format(messages=messages), Colors.CYAN)
+    cprint(prompt.pretty_repr().format(input=input), Colors.CYAN)
 
     chain = prompt | llm
 
@@ -213,8 +216,10 @@ Your reply should be very short.""",
     this_config['metadata']['UI_name'] = "Friendly Chatbot"
 
     # return {"messages": [chain.invoke({"user_input": user_input, "messages": convo_history}, config=config)]}
-    return {"messages": [chain.invoke({"messages": messages}, config=this_config)]}
-        # state["messages"], config=config)]}
+    # return {"messages": [chain.invoke({"messages": messages}, config=this_config)]}
+    bot_reply = chain.invoke({"input": input}, config=this_config)
+    # return {"messages": [AIMessage(content=bot_reply)]}
+    return {"messages": [AIMessage(content=bot_reply.content)]}
 
 
 def vectorstore(state: State, config: RunnableConfig):
