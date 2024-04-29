@@ -146,9 +146,12 @@ User question: {question}
 
     question_router = prompt | llm | JsonOutputParser()
 
+    this_config = config
+    this_config['metadata']['UI_name'] = "Ollama Router"
+
     # source = question_router.invoke({"convo_history": convo_history, "question": question}, config=config)
     # source = question_router.invoke({"messages": messages}, config=config)
-    source = question_router.invoke({"question": question}, config=config)
+    source = question_router.invoke({"question": question}, config=this_config)
     if source['datasource'] == 'vectorstore':
         print(">>> ROUTE QUESTION TO vectorstore")
         return "vectorstore"
@@ -206,8 +209,11 @@ Your reply should be very short.""",
 
     chain = prompt | llm
 
+    this_config = config
+    this_config['metadata']['UI_name'] = "Friendly Chatbot"
+
     # return {"messages": [chain.invoke({"user_input": user_input, "messages": convo_history}, config=config)]}
-    return {"messages": [chain.invoke({"messages": messages}, config=config)]}
+    return {"messages": [chain.invoke({"messages": messages}, config=this_config)]}
         # state["messages"], config=config)]}
 
 
