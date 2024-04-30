@@ -25,7 +25,7 @@ def main():
 
     ### INIT
     # NOTE: we no longer need this as a construct will be generated on first run, and new_chat is called then
-    # if "langchain_messages" not in st.session_state:
+    # if "convo_history" not in st.session_state:
     #     new_chat()
 
 

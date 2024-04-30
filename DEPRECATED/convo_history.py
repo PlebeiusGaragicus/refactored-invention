@@ -78,7 +78,7 @@
 #     st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
 
 #     with st.container(height=500, border=True):
-#         for msg in st.session_state.langchain_messages:
+#         for msg in st.session_state.convo_history:
 #             st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
 #         user_prompt_placeholder = st.empty()
 #         bot_reply_placeholder = st.empty()
