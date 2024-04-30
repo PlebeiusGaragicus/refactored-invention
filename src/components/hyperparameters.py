@@ -104,8 +104,11 @@ def cmp_hyperparameters():
                 st.markdown(":green[Save as new preset]")
                 st.text_input("Preset name", key="new_preset_name", label_visibility='collapsed')
                 if st.form_submit_button("🌱 :green[Save as new]", use_container_width=False):
-                    save_hyperparameters(st.session_state.new_preset_name)
-                    st.rerun()
+                    if st.session_state.new_preset_name:
+                        save_hyperparameters(st.session_state.new_preset_name)
+                        st.rerun()
+                    else:
+                        st.toast("Enter a name for the new preset", icon="🤯")
 
 
 

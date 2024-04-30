@@ -54,17 +54,29 @@ import logging
 #####################################################################################
 
 
-def cmp_metrics():
+def cmp_metrics(container):
     # st.header("📊 :blue[Metrics]", divider="rainbow")
 
-    with st.container(border=True):
+    # with st.container(border=True):
+    with container.container(border=True):
         st.text_input(":green[Session ID]", value=st.session_state.session_id, disabled=True)
-        tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
-        st.text_input(":green[Tokens]", value=tokens, disabled=True)
 
-        if len(st.session_state.convo_history) > 0:
-            with st.popover("Graph state"): # Message json
+        cols2 = st.columns((1, 1))
+        with cols2[1]:
+            tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
+            # st.text_input(":green[Tokens]", value=tokens, disabled=True)
+            st.write(f":green[Tokens:] :orange[{tokens}]")
+
+        with cols2[0]:
+            # if len(st.session_state.convo_history) > 0:
+            with st.popover("Convo history", use_container_width=True): # Message json
                 st.json(st.session_state.convo_history)
+            
+            with st.popover("hyperparameters", use_container_width=True):
+                st.json(st.session_state.graph_hyperparameters)
+
+            with st.popover("session state", use_container_width=True):
+                st.json(st.session_state)
 
 
 def cmp_convo_thoughts():
@@ -89,52 +101,82 @@ def cmp_convo_history(thoughts):
 
     st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
 
+    # cols3 = st.columns((2, 1, 1))
+    # with cols3[0]:
+    #     # st.button("nothing", use_container_width=True)
+    #     # pass
+    #     with st.container(border=True):
+    #         tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
+    #         st.write(f":green[Tokens:] `{tokens}`")
+
+    # if len(st.session_state.convo_history) > 0:
+    #     with cols3[1]:
+    #         if 'saved' in st.session_state:
+    #             with st.popover(":red[Delete thread]", use_container_width=True):
+    #                 st.warning("Are you sure?!")
+    #                 if st.button("🗑️ :red[Delete]", use_container_width=True):
+    #                     # import time
+    #                     st.toast("NOT YET IMPLEMENTED")
+    #                     # time.sleep(1)
+
+    #         else:
+    #             if st.button("💾 :blue[Save thread]", use_container_width=True):
+    #                 st.toast("NOT YET IMPLEMENTED")
+
+    # with cols3[2]:
+    #     if st.button("🌱 :green[New]", use_container_width=True):
+    #         st.toast("NOT YET IMPLEMENTED")
+
+
+
+
+
+
+
+def cmp_buttons():
     cols3 = st.columns((2, 1, 1))
     with cols3[0]:
         pass
+        # with st.container(border=True):
+        #     tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
+        #     st.write(f":green[Tokens:] `{tokens}`")
 
-    with cols3[1]:
-        if st.button("🌱 :green[New]", use_container_width=True):
-            st.toast("NOT YET IMPLEMENTED")
-
-    if len(st.session_state.convo_history) > -1:
-        with cols3[2]:
+    if len(st.session_state.convo_history) > 0:
+        with cols3[1]:
             if 'saved' in st.session_state:
                 with st.popover(":red[Delete thread]", use_container_width=True):
                     st.warning("Are you sure?!")
                     if st.button("🗑️ :red[Delete]", use_container_width=True):
-                        # import time
                         st.toast("NOT YET IMPLEMENTED")
-                        # time.sleep(1)
 
             else:
                 if st.button("💾 :blue[Save thread]", use_container_width=True):
                     st.toast("NOT YET IMPLEMENTED")
 
+    with cols3[2]:
+        if st.button("🌱 :green[New]", use_container_width=True):
+            st.toast("NOT YET IMPLEMENTED")
+
+
+
+
+
 
 def cmp_bottom():
-
-    bcol2 = st.columns((3, 2))
-    with bcol2[1]:
-        thoughts = cmp_convo_thoughts()
-        cmp_metrics()
-
-
-    with bcol2[0]:
-        cmp_convo_history(thoughts)
-
-
-
-    cols = st.columns((2, 1))
+    cols = st.columns((3, 2))
     with cols[1]:
-        st.header(body="Thought Process", divider="rainbow")
+        st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
         right = st.empty()
-        rc = right.container(border=True, height=600)
+        rc = right.container(border=True, height=550)
         status = rc.empty()
+
+        metrics_container = st.empty()
+        # cmp_metrics(metrics_container)
+
 
 
     with cols[0]:
-        st.header(body="Conversation History", divider="rainbow")
+        st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
         left = st.empty()
         lc = left.container(border=True, height=600)
 
@@ -173,164 +215,32 @@ def cmp_bottom():
                     with st.spinner("Thinking..."):
                         # status = st.empty()
                         # status.warning("Running the graph...")
-                        asyncio.run(run_graph(rc, bot_reply_chatmessage, status_expander))
-                        # status.empty()
-                        # status.success("Done!")
-                        status_expander.update(label=":green[Graph run complete]", state="complete")
-                        # rc.success("Done!")
+
+                        error = None
+                        try:
+                            asyncio.run(st.session_state.construct.run_graph(rc, bot_reply_chatmessage, status_expander))
+                        except Exception as e:
+                            error = e
+
                         interrupt_button.empty()
+                        if error:
+                            status_expander.update(label=":red[Graph run failed]", state="error")
+                            # status_expander.update(label=":red[Graph run failed]", state="error", expanded=True)
+                            # status_expander.write(f"Error: {error}")
+                            bot_reply_chatmessage.error(f"Error: {error}")
+                            import traceback
+                            bot_reply_chatmessage.code('\n'.join(traceback.format_exception(None, error, error.__traceback__)))
+                            # tb = "Traceback:\n" + '\n'.join(traceback.format_exception(None, error, error.__traceback__))
+                            # with st.popover("traceback"):
+                                # bot_reply_chatmessage.code(tb)
+                            interrupt_button.empty()
+                        else:
+                            status_expander.update(label=":green[Graph run complete]", state="complete")
+
+                        # rc.success("Done!")
 
 
+        cmp_buttons()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#####################################################################################
-#
-#                   THIS IS THE CODE THAT DOESN'T WORK
-#
-#                   THIS CODE IS RUN BY THE INTERFACE, ABOVE
-#
-#####################################################################################
-
-
-async def run_graph(thought_container, bot_reply_chatmessage, status_expander):
-
-    # st.info("Running the graph...")
-
-    graph_config = RunnableConfig()
-    # st_callback = StreamlitCallbackHandler(answer_container)
-    # st_callback = custom_callback(answer_container)
-    # st_callback = custom_callback()
-    # st_callback = MyCustomHandler()
-    # st_callback = StreamlitCallbackHandler(st.container())
-    # graph_config['callbacks'] = [st_callback]
-    # graph_config['callbacks'] = [StreamingStdOutCallbackHandler()]
-    # graph_config['callbacks'] = [callback()]
-    graph_config['hyperparameters'] = st.session_state.graph_hyperparameters
-    graph_config['metadata'] = {"conversation_id": st.session_state.session_id}
-    st.sidebar.markdown("# Graph config:")
-    st.sidebar.json(graph_config)
-
-    graph_input = {"input": st.session_state.input, "messages": st.session_state.convo_history}
-    st.sidebar.markdown("# Graph input:")
-    st.sidebar.json(graph_input)
-
-    # NOTE: we give parameters to the graph builder as it will be used to differentiate builds of the graph!!
-    graph = build_graph(use_open_routing=False)
-
-
-
-
-    # on_chat_model_stream
-
-
-
-
-    streamed_chunks = ""
-    current_node = None
-    # current_writer = None
-    current_writer = bot_reply_chatmessage.empty()
-    thought_writer = None
-    async for event in graph.astream_events(
-                            input=graph_input,
-                            config=graph_config,
-                            version='v1'
-                        ):
-        print(event)
-        print('\n\n')
-        # thought_text.json(event)
-        status_expander.write(event['event'])
-        status_expander.update(label=f":orange[Running:] :red[{event['event']}]")
-
-        if event['event'] == "on_chain_end":
-            if event['name'] == "LangGraph":
-                last_node = event['data']['output'].keys()
-                # print(last_node)
-                # get the first key
-                last_key = list(last_node)[0]
-                last_message = event['data']['output'].get(last_key)['messages'][0].content
-
-        if event['event'] != current_node:
-            streamed_chunks = ""
-            current_node = event['event']
-            # thought_container.write(f"Node: {current_node}")
-
-            if current_node not in ["on_chat_model_stream", "on_llm_new_token"]:
-                continue
-
-            # current_thought = thought_container.status(f"{current_node}", state="running", expanded=True)
-            # with current_thought:
-                # thought_writer = st.empty()
-            # if thought_writer:
-                # thought_writer.markdown("\n---\n")
-            thought_writer = thought_container.empty()
-            # thought_writer = thought_writer.container()
-            # thought_writer.markdown("\n---\n")
-            # thought_writer.write(f"Node: {current_node}")
-
-
-        # feedback_type = event['metadata'].get('feedback_type', None)
-        feedback_type = event['metadata'].get('UI_name', None)
-
-        # AN LLM IS GIVING FEEDBACK TO THE USER!
-        if feedback_type == "Friendly Chatbot":
-            if event['data'].get('chunk', None):
-                streamed_chunks += event['data']['chunk'].content
-                current_writer.markdown(streamed_chunks)
-
-                # with current_writer:
-                    # st.write(streamed_chunks)
-                    # current_writer.update()
-
-
-        if feedback_type == "Ollama Router":
-            if event['data'].get('chunk', None):
-                streamed_chunks += event['data']['chunk'].content
-                thought_writer.code(streamed_chunks)
-
-    st.session_state.convo_history.append(HumanMessage(content=st.session_state.input))
-    st.session_state.convo_history.append(AIMessage(content=last_message))
-
-
-
-
-
-
-
-
-
-# def run_prompt(user_prompt_placeholder, bot_reply_placeholder, thoughts):
-#     user_prompt_placeholder.chat_message("human", avatar=HUMAN_AVATAR).write(st.session_state.prompt)
-
-#     ret = st.session_state.construct.run_prompt(bot_reply_placeholder, thoughts)
-
-#     with bot_reply_placeholder:
-#         # st.chat_message("ai", avatar="🤖").write(ret.content)
-#         with st.chat_message("ai", avatar=BOT_AVATAR):
-#             # if it's a generator
-#             # if type(ret.content) is not itertools.iterable:
-#             if inspect.isasyncgen(ret):
-#                 async def write_async():
-#                     async for msg in ret:
-#                         st.write(msg)
-
-#                 asyncio.run(write_async())
-#             else:
-#                 st.write(ret.content)
-
+        metrics_container.empty()
+        cmp_metrics(metrics_container)
