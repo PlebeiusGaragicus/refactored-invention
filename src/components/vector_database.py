@@ -8,6 +8,16 @@ from src.common import FILES_DIR
 
 
 
+
+#####################################################################################
+#
+#
+#         HEY... GO FIND THAT STREAMLIT COMPONENT THAT SHOWED FILE DIRECTORY TREES...
+#
+#
+#####################################################################################
+
+
 def cmp_vector_database():
     st.header("🗄️ :green[Vector database]", divider="rainbow", anchor="VectorDatabase")
 

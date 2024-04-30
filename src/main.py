@@ -8,7 +8,7 @@ from src.components.vector_database import cmp_vector_database
 # from src.components.metrics import cmp_metrics
 from src.components.hyperparameters import cmp_hyperparameters
 # from src.components.presets import cmp_presets
-from src.components.tools import cmp_tools
+# from src.components.tools import cmp_tools
 from src.components.sidebar import cmp_constructs, cmp_saved_conversations, cmp_debug, cmp_links
 # from src.components.convo_history import cmp_convo_history, cmp_convo_thoughts
 
