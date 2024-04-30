@@ -105,13 +105,17 @@ def prompt_parameter(name, default='', help=None):
     }
 
 
-
 def build_interface(config):
     if "graph_hyperparameters" not in st.session_state:
         st.session_state.graph_hyperparameters = {}
 
-        # loat the user's saved hyperparameters
-        # TODO
+        # load the user's saved hyperparameter
+        if "selected_preset" in st.session_state:
+            from src.components.hyperparameters import load_presets
+            selected_preset = st.session_state.selected_preset
+            presets = load_presets()
+            st.session_state.loaded_preset = [preset for preset in presets if preset["name"] == selected_preset]
+            st.session_state.loaded_preset = st.session_state.loaded_preset[0] if st.session_state.loaded_preset else {}
 
 
 
@@ -124,8 +128,9 @@ def build_interface(config):
                 key=widget["name"],
                 min_value=widget["min"],
                 max_value=widget["max"],
-                value=widget["default"],
-                help=widget.get("help", None),
+                # value=widget["default"],
+                value=st.session_state.loaded_preset.get(widget["name"], widget["default"]),
+                help=widget.get("help", None),  
             )
         elif widget["widget"] == "selectbox":
                 with st.container(border=True):
@@ -136,7 +141,8 @@ def build_interface(config):
                     # label=f":blue[{widget["name"]}]",
                     key=widget["name"],
                     options=widget["options"],
-                    index=widget["options"].index(widget["default"]),
+                    # index=widget["options"].index(widget["default"]),
+                    index=widget["options"].index(st.session_state.loaded_preset.get(widget["name"], widget["default"])),
                     help=widget.get("help", None),
                 )
         elif widget["widget"] == "checkbox":
@@ -145,7 +151,8 @@ def build_interface(config):
                 label=f"**:blue[{widget["name"].replace('_', ' ')}]**",
                 # label=f":orange[{widget["name"]}]",
                 key=widget["name"],
-                value=widget["default"],
+                # value=widget["default"],
+                value=st.session_state.loaded_preset.get(widget["name"], widget["default"]),
                 help=widget.get("help", None),
             )
         elif widget["widget"] == "text_input":
@@ -153,7 +160,8 @@ def build_interface(config):
                 label=f"**:blue[{widget["name"].replace('_', ' ')}]**",
                 # label=f":green[{widget["name"]}]",
                 key=widget["name"],
-                value=widget["default"],
+                value=st.session_state.loaded_preset.get(widget["name"], widget["default"]),
+                # value=widget["default"],
                 help=widget.get("help", None),
             )
         elif widget["widget"] == "text_area":
@@ -161,7 +169,8 @@ def build_interface(config):
                 label=f"**:blue[{widget["name"].replace('_', ' ')}]**",
                 # label=f":green[{widget["name"]}]",
                 key=widget["name"],
-                value=widget["default"],
+                value=st.session_state.loaded_preset.get(widget["name"], widget["default"]),
+                # value=widget["default"],
                 help=widget.get("help", None),
             )
         else:
