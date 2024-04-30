@@ -97,9 +97,11 @@ def build_interface(config):
                     value=widget["default"]
                 )
             elif widget["widget"] == "selectbox":
-                st.session_state.graph_hyperparameters[widget["name"]] = st.selectbox(
+                # st.session_state.graph_hyperparameters[widget["name"]] = st.selectbox(
+                st.session_state.graph_hyperparameters[widget["name"]] = st.radio(
                     label=widget["name"],
-                    options=widget["options"]
+                    options=widget["options"],
+                    index=widget["options"].index(widget["default"])
                 )
             elif widget["widget"] == "checkbox":
                 st.session_state.graph_hyperparameters[widget["name"]] = st.checkbox(

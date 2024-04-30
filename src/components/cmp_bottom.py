@@ -1,14 +1,6 @@
 import asyncio
 import inspect
 
-from langchain.callbacks.base import BaseCallbackHandler
-
-# from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-# from langchain_community.callbacks import StreamlitCallbackHandler
-# from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-# from langchain_core.runnables.history import RunnableWithMessageHistory
-# # from langchain_openai import ChatOpenAI
-# from langchain_community.chat_models import ChatOllama
 
 from langchain_core.messages import HumanMessage
 
@@ -19,21 +11,83 @@ import streamlit as st
 from src.common import BOT_AVATAR, HUMAN_AVATAR
 
 
-# class StreamHandler(BaseCallbackHandler):
-#     def __init__(self, container, initial_text=""):
-#         self.container = container
-#         self.text = initial_text
+def cmp_metrics():
+    # st.header("📊 :blue[Metrics]", divider="rainbow")
 
-#     def on_llm_new_token(self, token: str, **kwargs) -> None:
-#         self.text += token
-#         # with self.container.chat_message("ai", avatar="🤖"):
-#         with self.container.chat_message("ai", avatar=BOT_AVATAR):
-#             st.markdown(self.text)
+    with st.container(border=True):
+        st.text_input(":green[Session ID]", value=st.session_state.session_id, disabled=True)
+        tokens = sum([len(msg.content) for msg in st.session_state.langchain_messages])
+        st.text_input(":green[Tokens]", value=tokens, disabled=True)
 
-
-
+        if len(st.session_state.langchain_messages) > 0:
+            with st.popover("Graph state"): # Message json
+                st.json(st.session_state.langchain_messages)
 
 
+def cmp_convo_thoughts():
+    st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
+
+    thought_container = st.empty()
+    thought_container.container(height=450, border=True)
+    # with st.container(height=500, border=True):
+        # pass
+
+    return thought_container
+
+
+def cmp_convo_history(thoughts):
+    st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
+
+    with st.container(height=500, border=True):
+        for msg in st.session_state.langchain_messages:
+            st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
+        user_prompt_placeholder = st.empty()
+        bot_reply_placeholder = st.empty()
+
+    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
+
+    cols3 = st.columns((1, 2, 1))
+    with cols3[2]:
+        st.button("🌱 :green[New]", use_container_width=True)
+
+
+def cmp_bottom():
+
+    bcol2 = st.columns((3, 2))
+    with bcol2[1]:
+        thoughts = cmp_convo_thoughts()
+        cmp_metrics()
+
+
+    with bcol2[0]:
+        cmp_convo_history(thoughts)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def run_graph():
+    pass
 
 
 
@@ -57,33 +111,19 @@ def run_prompt(user_prompt_placeholder, bot_reply_placeholder, thoughts):
                 st.write(ret.content)
 
 
-def cmp_convo_thoughts():
-    st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
-
-    thought_container = st.empty()
-    thought_container.container(height=500, border=True)
-    # with st.container(height=500, border=True):
-        # pass
-
-    return thought_container
 
 
 
 
-def run_graph():
-    pass
 
 
-def cmp_convo_history(thoughts):
-    st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
 
-    with st.container(height=500, border=True):
-        for msg in st.session_state.langchain_messages:
-            st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
-        user_prompt_placeholder = st.empty()
-        bot_reply_placeholder = st.empty()
 
-    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
+
+
+
+
+
 
 
 
@@ -101,3 +141,16 @@ def cmp_convo_history(thoughts):
 
 
 """
+
+
+# from langchain.callbacks.base import BaseCallbackHandler
+# class StreamHandler(BaseCallbackHandler):
+#     def __init__(self, container, initial_text=""):
+#         self.container = container
+#         self.text = initial_text
+
+#     def on_llm_new_token(self, token: str, **kwargs) -> None:
+#         self.text += token
+#         # with self.container.chat_message("ai", avatar="🤖"):
+#         with self.container.chat_message("ai", avatar=BOT_AVATAR):
+#             st.markdown(self.text)

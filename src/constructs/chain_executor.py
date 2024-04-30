@@ -26,7 +26,7 @@ from pydantic import BaseModel
 
 import streamlit as st
 
-from src.components.presets import find_preset
+# from src.components.presets import find_preset
 
 
 
@@ -45,14 +45,16 @@ class ToolsAgent():
     avatar: str = "🛠️"
 
     def show_prompts(self):
-        st.text_area("System Prompt",
-                height=200,
-                value=find_preset("system_prompt", default=DEFAULT_SYSTEM_PROMPT),
-                key="preset_system_prompt")
+        pass
+        # st.text_area("System Prompt",
+        #         height=200,
+        #         value=find_preset("system_prompt", default=DEFAULT_SYSTEM_PROMPT),
+        #         key="preset_system_prompt")
 
 
     def show_settings(self):
-        st.warning("nothing yet...")
+        pass
+        # st.warning("nothing yet...")
 
 
     def run_prompt(self, bot_reply_placeholder, thoughts):

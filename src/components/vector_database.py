@@ -11,7 +11,9 @@ from src.common import FILES_DIR
 def cmp_vector_database():
     st.header("🗄️ :green[Vector database]", divider="rainbow", anchor="VectorDatabase")
 
+    # with st.container(border=True):
     cols2 = st.columns((1, 2, 1))
+
     with cols2[0]:
         with st.popover("🆕 :green[New]", use_container_width=True):
             st.error("Not yet implemented")
@@ -47,7 +49,7 @@ def cmp_vector_database():
                         st.toast("Select a file to upload", icon="🚫")
 
 
-    with st.container(height=300, border=True):
+    with st.container(height=400, border=True):
 
         files = [f for f in FILES_DIR.iterdir() if f.is_file()]
         for file in files:
