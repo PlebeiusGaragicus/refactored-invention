@@ -89,9 +89,27 @@ def cmp_convo_history(thoughts):
 
     st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
 
-    cols3 = st.columns((1, 2, 1))
-    with cols3[2]:
-        st.button("🌱 :green[New]", use_container_width=True)
+    cols3 = st.columns((2, 1, 1))
+    with cols3[0]:
+        pass
+
+    with cols3[1]:
+        if st.button("🌱 :green[New]", use_container_width=True):
+            st.toast("NOT YET IMPLEMENTED")
+
+    if len(st.session_state.convo_history) > -1:
+        with cols3[2]:
+            if 'saved' in st.session_state:
+                with st.popover(":red[Delete thread]", use_container_width=True):
+                    st.warning("Are you sure?!")
+                    if st.button("🗑️ :red[Delete]", use_container_width=True):
+                        # import time
+                        st.toast("NOT YET IMPLEMENTED")
+                        # time.sleep(1)
+
+            else:
+                if st.button("💾 :blue[Save thread]", use_container_width=True):
+                    st.toast("NOT YET IMPLEMENTED")
 
 
 def cmp_bottom():
@@ -111,14 +129,8 @@ def cmp_bottom():
     with cols[1]:
         st.header(body="Thought Process", divider="rainbow")
         right = st.empty()
-        # rc = right.popover("Thought Process")
         rc = right.container(border=True, height=600)
         status = rc.empty()
-        # status = status.status("Running the graph", expanded=False, state="running")
-        # status = MutableExpander("Running the graph", expanded=False, state="running")
-        # rc.markdown("---")
-
-        # st.spinner
 
 
     with cols[0]:
