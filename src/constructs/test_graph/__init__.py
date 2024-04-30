@@ -151,12 +151,12 @@ class TestGraph:
         # graph_config['callbacks'] = [callback()]
         graph_config['hyperparameters'] = st.session_state.graph_hyperparameters
         graph_config['metadata'] = {"conversation_id": st.session_state.session_id}
-        st.sidebar.markdown("# Graph config:")
-        st.sidebar.json(graph_config)
+        # st.sidebar.markdown("# Graph config:")
+        # st.sidebar.json(graph_config)
 
         graph_input = {"input": st.session_state.input, "messages": st.session_state.convo_history}
-        st.sidebar.markdown("# Graph input:")
-        st.sidebar.json(graph_input)
+        # st.sidebar.markdown("# Graph input:")
+        # st.sidebar.json(graph_input)
 
         # NOTE: we give parameters to the graph builder as it will be used to differentiate builds of the graph!!
         graph = cls.build_graph(use_open_routing=False)

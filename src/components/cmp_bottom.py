@@ -1,7 +1,5 @@
+import logging
 import asyncio
-import inspect
-
-from langchain_core.messages import HumanMessage
 
 import streamlit as st
 
@@ -14,118 +12,33 @@ from src.common import BOT_AVATAR, HUMAN_AVATAR
 
 
 
-import uuid
-import asyncio
-
-import streamlit as st
-
-from langchain_community.callbacks import StreamlitCallbackHandler
-# from streamlit.external.langchain import (StreamlitCallbackHandler as OfficialStreamlitCallbackHandler)
-from langchain_core.callbacks import BaseCallbackHandler
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from streamlit.runtime.scriptrunner import get_script_run_ctx
-
-from langchain_community.callbacks.streamlit.mutable_expander import MutableExpander
-
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.runnables import RunnableConfig
-
-from src.interface import Colors, color, reset_color, cprint, cput, change_color, build_interface
-
-import logging
 
 
+# def cmp_metrics(container):
+def cmp_metrics():
+    st.header("📊 :violet[Metrics]", divider="rainbow")
 
-
-
-
-
-
-
-
-
-
-#####################################################################################
-#
-#
-#
-#
-#
-#####################################################################################
-
-
-def cmp_metrics(container):
-    # st.header("📊 :blue[Metrics]", divider="rainbow")
-
-    # with st.container(border=True):
-    with container.container(border=True):
+    # with container.container(border=True):
+    with st.container(border=True):
         st.text_input(":green[Session ID]", value=st.session_state.session_id, disabled=True)
 
-        cols2 = st.columns((1, 1))
-        with cols2[1]:
-            tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
-            # st.text_input(":green[Tokens]", value=tokens, disabled=True)
-            st.write(f":green[Tokens:] :orange[{tokens}]")
+        # cols2 = st.columns((1, 1))
+        # with cols2[1]:
+        tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
+        # st.text_input(":green[Tokens]", value=tokens, disabled=True)
+        st.write(f":green[Tokens:] :orange[{tokens}]")
 
-        with cols2[0]:
-            # if len(st.session_state.convo_history) > 0:
-            with st.popover("Convo history", use_container_width=True): # Message json
-                st.json(st.session_state.convo_history)
-            
-            with st.popover("hyperparameters", use_container_width=True):
-                st.json(st.session_state.graph_hyperparameters)
+        # with cols2[0]:
+        # if len(st.session_state.convo_history) > 0:
+        with st.popover("Convo history", use_container_width=True): # Message json
+            st.json(st.session_state.convo_history)
+        
+        with st.popover("hyperparameters", use_container_width=True):
+            st.json(st.session_state.graph_hyperparameters)
 
-            with st.popover("session state", use_container_width=True):
-                st.json(st.session_state)
+        with st.popover("session state", use_container_width=True):
+            st.json(st.session_state)
 
-
-def cmp_convo_thoughts():
-    st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
-
-    thought_container = st.empty()
-    thought_container.container(height=450, border=True)
-    # with st.container(height=500, border=True):
-        # pass
-
-    return thought_container
-
-
-def cmp_convo_history(thoughts):
-    st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
-
-    with st.container(height=500, border=True):
-        for msg in st.session_state.convo_history:
-            st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
-        user_prompt_placeholder = st.empty()
-        bot_reply_placeholder = st.empty()
-
-    st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
-
-    # cols3 = st.columns((2, 1, 1))
-    # with cols3[0]:
-    #     # st.button("nothing", use_container_width=True)
-    #     # pass
-    #     with st.container(border=True):
-    #         tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
-    #         st.write(f":green[Tokens:] `{tokens}`")
-
-    # if len(st.session_state.convo_history) > 0:
-    #     with cols3[1]:
-    #         if 'saved' in st.session_state:
-    #             with st.popover(":red[Delete thread]", use_container_width=True):
-    #                 st.warning("Are you sure?!")
-    #                 if st.button("🗑️ :red[Delete]", use_container_width=True):
-    #                     # import time
-    #                     st.toast("NOT YET IMPLEMENTED")
-    #                     # time.sleep(1)
-
-    #         else:
-    #             if st.button("💾 :blue[Save thread]", use_container_width=True):
-    #                 st.toast("NOT YET IMPLEMENTED")
-
-    # with cols3[2]:
-    #     if st.button("🌱 :green[New]", use_container_width=True):
-    #         st.toast("NOT YET IMPLEMENTED")
 
 
 
@@ -165,18 +78,18 @@ def cmp_buttons():
 def cmp_bottom():
     cols = st.columns((3, 2))
     with cols[1]:
-        st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
+        st.header("🧠 :gray[Thought Process]", divider="rainbow", anchor="thoughts")
         right = st.empty()
-        rc = right.container(border=True, height=550)
+        rc = right.container(border=True, height=710)
         status = rc.empty()
 
-        metrics_container = st.empty()
+        # metrics_container = st.empty()
         # cmp_metrics(metrics_container)
 
 
 
     with cols[0]:
-        st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
+        st.header("🗣️💬 :rainbow[Conversation thread]", divider="rainbow", anchor="ConvoHistory")
         left = st.empty()
         lc = left.container(border=True, height=600)
 
@@ -242,5 +155,84 @@ def cmp_bottom():
 
         cmp_buttons()
 
-        metrics_container.empty()
-        cmp_metrics(metrics_container)
+        # metrics_container.empty()
+        # cmp_metrics(metrics_container)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################################################
+#
+#
+#               OLD CODE GRAVEYARD
+#
+#
+#####################################################################################
+
+# def cmp_convo_thoughts():
+#     st.header("🧠 :blue[Thought Process]", divider="rainbow", anchor="thoughts")
+
+#     thought_container = st.empty()
+#     thought_container.container(height=450, border=True)
+#     # with st.container(height=500, border=True):
+#         # pass
+
+#     return thought_container
+
+
+# def cmp_convo_history(thoughts):
+#     st.header("🗣️💬 :rainbow[Conversation history]", divider="rainbow", anchor="ConvoHistory")
+
+#     with st.container(height=500, border=True):
+#         for msg in st.session_state.convo_history:
+#             st.chat_message(msg.type, avatar=HUMAN_AVATAR if type(msg) is HumanMessage else BOT_AVATAR).write(msg.content)
+#         user_prompt_placeholder = st.empty()
+#         bot_reply_placeholder = st.empty()
+
+#     st.chat_input("🎯 Ask me anything", key="prompt", on_submit=run_graph, args=(user_prompt_placeholder, bot_reply_placeholder, thoughts,))
+
+    # cols3 = st.columns((2, 1, 1))
+    # with cols3[0]:
+    #     # st.button("nothing", use_container_width=True)
+    #     # pass
+    #     with st.container(border=True):
+    #         tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
+    #         st.write(f":green[Tokens:] `{tokens}`")
+
+    # if len(st.session_state.convo_history) > 0:
+    #     with cols3[1]:
+    #         if 'saved' in st.session_state:
+    #             with st.popover(":red[Delete thread]", use_container_width=True):
+    #                 st.warning("Are you sure?!")
+    #                 if st.button("🗑️ :red[Delete]", use_container_width=True):
+    #                     # import time
+    #                     st.toast("NOT YET IMPLEMENTED")
+    #                     # time.sleep(1)
+
+    #         else:
+    #             if st.button("💾 :blue[Save thread]", use_container_width=True):
+    #                 st.toast("NOT YET IMPLEMENTED")
+
+    # with cols3[2]:
+    #     if st.button("🌱 :green[New]", use_container_width=True):
+    #         st.toast("NOT YET IMPLEMENTED")

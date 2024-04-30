@@ -12,7 +12,7 @@ from src.components.hyperparameters import cmp_hyperparameters
 from src.components.sidebar import cmp_constructs, cmp_saved_conversations, cmp_debug, cmp_links
 # from src.components.convo_history import cmp_convo_history, cmp_convo_thoughts
 
-from src.components.cmp_bottom import cmp_bottom
+from src.components.cmp_bottom import cmp_bottom, cmp_metrics
 
 # from src.common import get
 
@@ -32,12 +32,14 @@ def main():
     # NOTE: if desktop mode...
     ### SIDEBAR
     with st.sidebar:
-        center_text("h1", "🗣️🦜💬", 40)
+        # center_text("h1", "🗣️🦜💬", 40)
         # st.title(":green[LangChain] :blue[integrator] :red[100]")
+        st.header(":green[LangGraph] :blue[Integrator] :red[5000] 🗣️🦜💬", divider="rainbow")
         with st.container(border=True):
             cmp_constructs()
     
         with st.popover(":orange[Construct info]", use_container_width=True):
+        # with st.popover(":orange[Construct info]", use_container_width=False):
             st.caption( st.session_state.get("construct").__doc__ )
 
     # with st.sidebar:
@@ -77,12 +79,15 @@ def main():
     cmp_bottom()
 
 
+
     # POST-PROCESSING SIDEBAR
 
     with st.sidebar:
+        cmp_saved_conversations()
+
+        cmp_metrics()
         # cmp_links()
 
-        cmp_saved_conversations()
 
         ### DEBUG
         # cmp_debug()
