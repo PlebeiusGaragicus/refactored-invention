@@ -42,7 +42,7 @@ This is the simplest graph you can make - just one node that calls an Ollama mod
     @classmethod
     def interface_config(self):
         # TODO - try to list the available models... perhaps on app load?
-        MODEL_OPTIONS = ['llama:8b', 'gemma:2b', 'mistral:7b', 'dolphin-mistral:latest']
+        MODEL_OPTIONS = ['dolphin-mistral:7b', 'dolphin-phi:2.7b', 'gemma:2b', 'gemma:7b', 'llama2:7b', 'llama3:8b', 'mistral:7b', 'phi3:3.8b']
 
         return {
             "graph_name": "Example Graph",

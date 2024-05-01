@@ -133,6 +133,11 @@ def build_interface(config):
                 help=widget.get("help", None),  
             )
         elif widget["widget"] == "selectbox":
+                try:
+                    index = widget["options"].index(st.session_state.loaded_preset.get(widget["name"], widget["default"]))
+                except ValueError:
+                    index=0
+
                 with st.container(border=True):
                 # st.session_state.graph_hyperparameters[widget["name"]] = st.selectbox(
                     st.session_state.graph_hyperparameters[widget["name"]] = st.radio(
@@ -142,7 +147,7 @@ def build_interface(config):
                     key=widget["name"],
                     options=widget["options"],
                     # index=widget["options"].index(widget["default"]),
-                    index=widget["options"].index(st.session_state.loaded_preset.get(widget["name"], widget["default"])),
+                    index=index,
                     help=widget.get("help", None),
                 )
         elif widget["widget"] == "checkbox":
