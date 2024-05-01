@@ -70,13 +70,13 @@ def bad_route(state: State, config: RunnableConfig):
 #     graph = graph_builder.compile()
 #     return graph
 
+from src.constructs import PlebGraph
 
 
 
 
 
-
-class TestGraph:
+class TestGraph(PlebGraph):
     """ This is the docstring to the graph class!  Whoopiee!"""
     name: str = "TestGraph"
     avatar: str = "🛠️"
@@ -99,7 +99,8 @@ class TestGraph:
         }
 
     @classmethod
-    def build_graph(cls, use_open_routing: bool):
+    # def build_graph(cls, use_open_routing: bool):
+    def build_graph(cls):
 
         from src.constructs.test_graph.router import route_OpenAI, route_Ollama
         from src.constructs.test_graph.friendly_chatbot import friendly_chatbot
@@ -118,7 +119,8 @@ class TestGraph:
         graph_builder.add_edge("bad_route", END)
 
         graph_builder.set_conditional_entry_point(
-                        route_OpenAI if use_open_routing else route_Ollama,
+                        # route_OpenAI if use_open_routing else route_Ollama,
+                        route_Ollama,
                         {
                             "vectorstore": "vectorstore",
                             "friendly_chatbot": "friendly_chatbot",
@@ -229,4 +231,3 @@ class TestGraph:
 
         st.session_state.convo_history.append(HumanMessage(content=st.session_state.input))
         st.session_state.convo_history.append(AIMessage(content=last_message))
-

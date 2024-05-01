@@ -10,37 +10,69 @@ from langchain_core.messages import HumanMessage, AIMessage
 
 import streamlit as st
 
-from src.constructs import ALL_CONSTRUCTS
+from src.constructs import all_constructs
 from src.interface import center_text
+
+from src.database import get_db
+
+
+
 
 
 def cmp_constructs():
-    construct_names = [c.name for c in ALL_CONSTRUCTS]
+    construct_names = [c.name for c in all_constructs()]
+    db = get_db()
 
-    if "selected_construct" not in st.session_state:
-        st.session_state.selected_construct = None
+
+
+    def load_construct():
+        # construct_names = [c.name for c in ALL_CONSTRUCTS]
+        # st.session_state.selected_construct = selected
+        # selected = st.session_state.selected_construct
+
+        for Construct in all_constructs():
+            if Construct.name == st.session_state.selected_construct:
+                st.session_state["construct"] = Construct()
+
+        db.user_settings.update_one({"key": "selected_construct"}, {"$set": {"value": st.session_state.selected_construct}}, upsert=True)
+        st.toast(f"Switched to {st.session_state.selected_construct}!", icon=st.session_state["construct"].avatar)
+        new_chat()
+
+
+    # Initialize or load the selection from the database if not in the session state
+    # if "selected_construct" not in st.session_state:
+    if "construct" not in st.session_state:
         st.toast("Welcome to PlebChat!", icon="🎉")
+        selected_construct = db.user_settings.find_one({"key": "selected_construct"})
+        if selected_construct and selected_construct["value"] in construct_names:
+            selected_construct = selected_construct["value"]
+        else:
+            selected_construct = construct_names[0]
+            st.warning("No construct selection saved in database.")
+    else:
+        selected_construct = st.session_state.selected_construct
 
-    selected = st.radio("Construct", construct_names, horizontal=True, index=0, label_visibility="collapsed")
+        # load_construct()
 
-    if selected == st.session_state.selected_construct:
-        return
 
-    st.session_state.selected_construct = selected
 
-    for Construct in ALL_CONSTRUCTS:
-        if Construct.name == selected:
-            st.session_state["construct"] = Construct()
 
-    st.toast(f"Switched to {selected}!", icon=st.session_state["construct"].avatar)
+    # selected = st.radio(
+    st.radio(
+        "choose a construct",
+        options=construct_names,
+        horizontal=True,
+        index=construct_names.index(selected_construct),
+        label_visibility="collapsed",
+        key="selected_construct",
+        on_change=load_construct)
 
-    # for s in st.session_state:
-    #     if s.startswith("*"):
-    #         del st.session_state[s]
-    #         print(f"Deleted {s}")
 
-    new_chat()
-    # st.rerun()
+    if 'construct' not in st.session_state:
+        load_construct()
+
+
+
 
 
 
@@ -93,16 +125,21 @@ def cmp_links():
 
 
 def cmp_saved_conversations():
-    st.header(":blue[Saved Conversations]", divider="rainbow")
+    # st.header(":blue[Saved Conversations]", divider="rainbow")
     # st.markdown(".")
-    if len(st.session_state.convo_history) > 0:
-        clear_button_placeholder = st.empty()
-        draw_clear_button(clear_button_placeholder)
-        center_text("p", "---", 7)
+    # if len(st.session_state.convo_history) > 0:
+    #     clear_button_placeholder = st.empty()
+    #     draw_clear_button(clear_button_placeholder)
+    #     center_text("p", "---", 7)
 
-    #TODO - implement saved conversations
-    st.button("[None saved yet]", use_container_width=True, disabled=True)
+    # pass
+    # with st.popover(":blue[Saved Conversations]", use_container_width=True):
+    with st.expander(":blue[Saved Conversations]"):
+        for _ in range(10):
+            st.button(f"Button {_} button yay ayyy y yaya!!", use_container_width=True)
 
+        st.write("---")
+        st.button("➕ Load more", use_container_width=True)
 
 
 def draw_messages():

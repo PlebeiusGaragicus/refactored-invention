@@ -38,12 +38,11 @@ def main():
         with st.container(border=True):
             cmp_constructs()
     
-        with st.popover(":orange[Construct info]", use_container_width=True):
-        # with st.popover(":orange[Construct info]", use_container_width=False):
-            st.caption( st.session_state.get("construct").__doc__ )
+        # with st.popover(":orange[Construct info]", use_container_width=True):
+        # # with st.popover(":orange[Construct info]", use_container_width=False):
+        #     st.session_state.get("construct").print_image()
+        #     st.markdown( st.session_state.get("construct").__doc__ )
 
-    # with st.sidebar:
-        # cmp_presets()
 
     maincols2 = st.columns((1, 1))
     

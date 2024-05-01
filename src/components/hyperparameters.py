@@ -142,7 +142,7 @@ def cmp_hyperparameters():
 
 
 
-    with st.container(height=400, border=True):
+    with st.container(height=500, border=True):
         build_interface( st.session_state["construct"].interface_config() )
 
 

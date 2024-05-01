@@ -59,7 +59,7 @@ def cmp_vector_database():
                         st.toast("Select a file to upload", icon="🚫")
 
 
-    with st.container(height=400, border=True):
+    with st.container(height=500, border=True):
 
         files = [f for f in FILES_DIR.iterdir() if f.is_file()]
         for file in files:

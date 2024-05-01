@@ -172,6 +172,7 @@ def build_interface(config):
                 value=st.session_state.loaded_preset.get(widget["name"], widget["default"]),
                 # value=widget["default"],
                 help=widget.get("help", None),
+                height=180
             )
         else:
             st.error(f"Unknown widget type: {widget['widget']}")

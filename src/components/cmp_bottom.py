@@ -16,10 +16,11 @@ from src.common import BOT_AVATAR, HUMAN_AVATAR
 
 # def cmp_metrics(container):
 def cmp_metrics():
-    st.header("📊 :violet[Metrics]", divider="rainbow")
+    # st.header("📊 :violet[Metrics]", divider="rainbow")
+    with st.expander("📊 :violet[Metrics]"):
 
-    # with container.container(border=True):
-    with st.container(border=True):
+        # with container.container(border=True):
+        # with st.container(border=True):
         st.text_input(":green[Session ID]", value=st.session_state.session_id, disabled=True)
 
         # cols2 = st.columns((1, 1))
@@ -47,12 +48,26 @@ def cmp_metrics():
 
 
 def cmp_buttons():
-    cols3 = st.columns((2, 1, 1))
+    cols3 = st.columns((1, 1, 1, 1))
     with cols3[0]:
-        pass
+        # pass
+        with st.popover(":orange[Construct info]", use_container_width=True):
+        # with st.popover(":orange[Construct info]", use_container_width=False):
+            st.markdown( st.session_state.get("construct").__doc__ )
+            st.session_state.get("construct").print_image()
         # with st.container(border=True):
         #     tokens = sum([len(msg.content) for msg in st.session_state.convo_history])
         #     st.write(f":green[Tokens:] `{tokens}`")
+
+    # with cols3[1]:
+    #     with st.popover(":blue[History]", use_container_width=True):
+    #         # st.write(st.session_state.convo_history)
+    #         st.write(st.session_state.convo_history)
+    #         #TODO - implement saved conversations
+    #         st.button("[None saved yet]", use_container_width=True, disabled=True)
+
+    #         # for _ in range(22):
+            #     st.button(f"Button {_} button yay ayyy y yaya!!", use_container_width=True)
 
     if len(st.session_state.convo_history) > 0:
         with cols3[1]:
@@ -66,9 +81,9 @@ def cmp_buttons():
                 if st.button("💾 :blue[Save thread]", use_container_width=True):
                     st.toast("NOT YET IMPLEMENTED")
 
-    with cols3[2]:
-        if st.button("🌱 :green[New]", use_container_width=True):
-            st.toast("NOT YET IMPLEMENTED")
+        with cols3[2]:
+            if st.button("🌱 :green[New]", use_container_width=True):
+                st.toast("NOT YET IMPLEMENTED")
 
 
 
@@ -80,7 +95,7 @@ def cmp_bottom():
     with cols[1]:
         st.header("🧠 :gray[Thought Process]", divider="rainbow", anchor="thoughts")
         right = st.empty()
-        rc = right.container(border=True, height=710)
+        rc = right.container(border=True, height=610)
         status = rc.empty()
 
         # metrics_container = st.empty()
@@ -91,7 +106,7 @@ def cmp_bottom():
     with cols[0]:
         st.header("🗣️💬 :rainbow[Conversation thread]", divider="rainbow", anchor="ConvoHistory")
         left = st.empty()
-        lc = left.container(border=True, height=600)
+        lc = left.container(border=True, height=500)
 
         for message in st.session_state.convo_history:
             with lc.chat_message(name=message.type):
