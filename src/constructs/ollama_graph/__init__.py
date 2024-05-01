@@ -45,7 +45,7 @@ This is the simplest graph you can make - just one node that calls an Ollama mod
         MODEL_OPTIONS = ['dolphin-mistral:7b', 'dolphin-phi:2.7b', 'gemma:2b', 'gemma:7b', 'llama2:7b', 'llama3:8b', 'mistral:7b', 'phi3:3.8b']
 
         return {
-            "graph_name": "Example Graph",
+            # "graph_name": "Example Graph", # TODO WHY DO I NEED A GRAPH_NAME?
             "widgets": [
                 # TODO rename these to - numeric_parameter, options_parameter, boolean_parameter, text_parameter
                 numeric_parameter("llm_temperature", 0.0, 1.0, default=0.8, help="The temperature of the LLM"),
@@ -69,5 +69,3 @@ This is the simplest graph you can make - just one node that calls an Ollama mod
 
         graph: CompiledGraph = graph_builder.compile()
         return graph
-
-

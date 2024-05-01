@@ -50,9 +50,6 @@ class PlebGraph:
         file = Path().parent / "assets" / f"{cls.name}_diagram.jpeg"
         if not file.exists():
             cls.save_diagram()
-            # st.warning(f"Diagram not found! `{file}`")
-            # return
-
         st.image( str(file) )
 
 
