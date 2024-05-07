@@ -29,4 +29,7 @@ from src.constructs.test_graph import State
 def vectorstore(state: State, config: RunnableConfig):
     cprint("\n--- NODE: vectorstore() ---", Colors.MAGENTA)
 
+    # this_config = config
+    # this_config['metadata']['node_type'] = "thought"
+
     return {"messages": [AIMessage(content="THE DATABASE IS NOT YET IMPLEMENTED!")]}

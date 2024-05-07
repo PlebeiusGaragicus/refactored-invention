@@ -7,3 +7,5 @@ venv/
 FILES/*
 
 *.log
+
+db_path/

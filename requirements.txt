@@ -16,6 +16,8 @@ grandalf
 tavily-python
 bs4
 chromadb
+gpt4all
+chromadb
 
 # gtts
 # ollama

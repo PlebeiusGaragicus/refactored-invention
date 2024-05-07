@@ -65,10 +65,13 @@ User query:
     chain = prompt | llm
 
     this_config = config
-    this_config['metadata']['UI_name'] = "Friendly Chatbot"
+    this_config['metadata']['node_type'] = "output"
 
     # return {"messages": [chain.invoke({"user_input": user_input, "messages": convo_history}, config=config)]}
     # return {"messages": [chain.invoke({"messages": messages}, config=this_config)]}
     bot_reply = chain.invoke({"input": input}, config=this_config)
     # return {"messages": [AIMessage(content=bot_reply)]}
-    return {"messages": [AIMessage(content=bot_reply.content)]}
+    return {
+        "messages": [AIMessage(content=bot_reply.content)],
+        # "something_random": 123
+        }

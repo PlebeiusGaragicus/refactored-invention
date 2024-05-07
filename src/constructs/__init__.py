@@ -3,7 +3,7 @@
 # ALL_CONSTRUCTS = [TestGraph, OllamaGraph]
 
 
-
+import logging
 from typing import Annotated, Literal
 from pathlib import Path
 
@@ -73,6 +73,8 @@ class PlebGraph:
             status_expander.write(event['event'])
             status_expander.update(label=f":orange[Running:] :red[{event['event']}]")
 
+            ### NOTE: This tries to get the final output of the graph
+            ### I'm not otherwise sure how to get it when calling graph.astream_events()
             if event['event'] == "on_chain_end":
                 if event['name'] == "LangGraph":
                     last_node = event['data']['output'].keys()
@@ -83,24 +85,36 @@ class PlebGraph:
             if event['event'] != current_node:
                 streamed_chunks = ""
                 current_node = event['event']
+                # logging.debug(current_node)
+                logging.debug(event)
+
+                node_writer = thought_container.empty()
+                node_writer.write(f"Node: {event['name']}: {current_node}")
 
                 if current_node not in ["on_chat_model_stream", "on_llm_new_token"]:
                     continue
 
                 thought_writer = thought_container.empty()
 
-            feedback_type = event['metadata'].get('UI_name', None)
+            node_type = event['metadata'].get('node_type', None)
 
             # AN LLM IS GIVING FEEDBACK TO THE USER!
-            if feedback_type == "Friendly Chatbot":
+            if node_type == "output":
                 if event['data'].get('chunk', None):
                     streamed_chunks += event['data']['chunk'].content
                     current_writer.markdown(streamed_chunks)
 
-            if feedback_type == "Ollama Router":
+            if node_type == "thought":
                 if event['data'].get('chunk', None):
                     streamed_chunks += event['data']['chunk'].content
                     thought_writer.code(streamed_chunks)
 
         st.session_state.convo_history.append(HumanMessage(content=st.session_state.input))
         st.session_state.convo_history.append(AIMessage(content=last_message))
+
+        final_state = graph.get_state(config=graph_config)
+        logging.error(final_state)
+
+
+# NODE METADATA
+## this_config['metadata']['node_type'] = "output" | "thought"

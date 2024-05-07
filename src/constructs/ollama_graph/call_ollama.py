@@ -42,7 +42,7 @@ def call_ollama(state: State, config: RunnableConfig):
     chain = prompt | llm
 
     this_config = config
-    this_config['metadata']['UI_name'] = "Friendly Chatbot"
+    this_config['metadata']['node_type'] = "output"
 
     bot_reply = chain.invoke({"input": input}, config=this_config)
     return {"messages": [AIMessage(content=bot_reply.content)]}

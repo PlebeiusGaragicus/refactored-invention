@@ -35,7 +35,10 @@ def route_Ollama(state: State, config: RunnableConfig):
     Returns:
         str: Next node to call
     """
+    print("THIS IS THE STATE")
     print(state)
+
+    state["something_random"] = 4494
 
     # cprint("\n--- NODE: route_Ollama() ---", Colors.MAGENTA)
     logging.debug("NODE: route_Ollama()")
@@ -79,7 +82,7 @@ User question: {question}
     question_router = prompt | llm | JsonOutputParser()
 
     this_config = config
-    this_config['metadata']['UI_name'] = "Ollama Router"
+    this_config['metadata']['node_type'] = "thought"
 
     # source = question_router.invoke({"convo_history": convo_history, "question": question}, config=config)
     # source = question_router.invoke({"messages": messages}, config=config)

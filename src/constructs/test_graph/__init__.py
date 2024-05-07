@@ -26,6 +26,7 @@ from src.interface import (
 class State(TypedDict):
     input: str
     messages: Annotated[list, add_messages]
+    something_random: int
 
 
 

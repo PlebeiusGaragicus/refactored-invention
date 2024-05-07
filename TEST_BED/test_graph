@@ -6,4 +6,4 @@ export DEBUG=true
 
 args="--server.runOnSave true --logger.level info --server.headless true"
 # streamlit run $args test_graph.py 2>&1 | tee test_graph.log
-streamlit run $args test_graph.py | tee test_graph.log
+streamlit run $args test_graph.py 2>&1 | tee test_graph.log
