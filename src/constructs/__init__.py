@@ -68,7 +68,8 @@ class PlebGraph:
         async for event in graph.astream_events(
                                 input=graph_input,
                                 config=graph_config,
-                                version='v1'
+                                version='v1',
+                                # stream_mode='values' # TODO - find documentation for this ... probably under .stream()
                             ):
             status_expander.write(event['event'])
             status_expander.update(label=f":orange[Running:] :red[{event['event']}]")
@@ -112,8 +113,8 @@ class PlebGraph:
         st.session_state.convo_history.append(HumanMessage(content=st.session_state.input))
         st.session_state.convo_history.append(AIMessage(content=last_message))
 
-        final_state = graph.get_state(config=graph_config)
-        logging.error(final_state)
+        # final_state = graph.get_state(config=graph_config)
+        # logging.error(final_state)
 
 
 # NODE METADATA

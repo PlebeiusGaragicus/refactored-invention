@@ -10,7 +10,10 @@ def get_chroma():
     embedding = GPT4AllEmbeddings()
 
     db_path = "./db_path"  # Path to SQLite database
-    chroma = Chroma(persist_directory=db_path, embedding_function=embedding, collection_name="rag-chroma")
+    chroma = Chroma(persist_directory=db_path,
+                    embedding_function=embedding,
+                    collection_name="rag-chroma"
+            )
 
     return chroma
 
@@ -38,7 +41,11 @@ def ingest_urls(urls: list):
     # Convert each split into a Document format expected by Chroma
     chroma_documents = [Document(page_content=split.page_content, metadata={"source_url": url}) for split in all_splits]
     # Add documents to Chroma and get back their IDs
-    ids = chroma.add_documents(chroma_documents)
+    # ids = chroma.add_documents(chroma_documents)
+
+    # chroma.add(documents=chroma_documents,
+    #            metadatas=[{"source_url": url} for url in urls])
+
     return ids
 
 
